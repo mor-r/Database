@@ -1,0 +1,73 @@
+import java.sql.*;
+
+public class Main {
+    public static void main(String[] args) throws ClassNotFoundException, SQLException {
+        //注册Driver
+        Class.forName("com.mysql.jdbc.Driver");
+        //通过DriverManager获取数据库连接
+        Connection connection=DriverManager.getConnection(
+                "jdbc:mysql://localhost:3306/填自己有的数据库?userSSL=false",
+                "自己的mysql用户名",
+                "自己的mysql密码"
+        );
+        // 如果向日葵班(xiangrikui)已经有了，就不在插入
+
+        try (Statement statement = connection.createStatement()) {
+            statement.executeUpdate(
+                    "INSERT INTO classes (name) VALUES ('xiangrikui')"
+            );
+        }
+
+        int classId;
+        try (Statement statement = connection.createStatement()) {
+            try (ResultSet resultSet = statement.executeQuery(
+                    "SELECT id FROM classes WHERE name = 'xiangrikui'"
+            )) {
+
+                resultSet.next();
+                classId = resultSet.getInt(1);
+            }
+        }
+
+        try (Statement statement = connection.createStatement()) {
+            String sql = "INSERT INTO students (sn, class_id, name)"
+                    + " VALUES ('10086', " + classId + ", 'labixiaoxin'),"
+                    + " ('10087', " + classId + ", 'maidou'),"
+                    + " ('10088', " + classId + ", 'sunwukong')";
+            System.out.println(sql);
+            statement.executeUpdate(sql);
+        }
+        /*
+        Statement statement=connection.createStatement();
+        //插入
+        int rows=statement.executeUpdate("INSERT INTO classes (name) VALUES ('Java11班')");
+        System.out.println(rows);
+        //更新
+        statement=connection.createStatement();
+        rows=statement.executeUpdate("UPDATE classes SET name=('C++11班') WHERE name='Java11班'");
+        System.out.println(rows);
+        statement.close();
+        */
+
+
+        /*
+        ResultSet resultSet=statement.executeQuery("SHOW TABLES");
+        while(resultSet.next()){
+            String tableName=resultSet.getString(1);
+            System.out.println(tableName);
+        }
+        //关闭resultSet
+        resultSet.close();
+
+        //关闭statement
+        statement.close();
+        */
+
+
+
+        //System.out.println(connection);
+
+        //最后关闭连接
+        connection.close();
+    }
+}
